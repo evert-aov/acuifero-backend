@@ -1,0 +1,19 @@
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Caché de Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Variables de entorno (¡Crítico no subir esto!)
+.env
+
+# Editores y hojas de ruta de IDEs
+.idea/
+.vscode/
+*.swp
