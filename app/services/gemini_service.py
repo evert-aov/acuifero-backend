@@ -1,4 +1,4 @@
-import google.generativeai as genai
+import os
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.config import settings
@@ -7,8 +7,56 @@ from app.dtos.prediccion_dto import PrediccionResponse, GeminiResumenResponse
 from app.repositories.municipio_repository import MunicipioRepository
 from app.services.prediccion_service import PrediccionService
 
-genai.configure(api_key=settings.gemini_api_key)
-_model = genai.GenerativeModel("gemini-1.5-flash")
+_model = None
+
+
+def _init_model():
+    """
+    Inicializa el modelo de IA con este orden de prioridad:
+    1. Vertex AI con service account JSON
+    2. Gemini API Key (fallback)
+    """
+    global _model
+
+    # Intento 1: Vertex AI
+    key_path = settings.google_application_credentials_vertex
+    if key_path and os.path.exists(key_path) and settings.vertex_project_id:
+        from google.auth import default
+        from google.oauth2 import service_account
+        import vertexai
+        from vertexai.generative_models import GenerativeModel
+
+        try:
+            creds = service_account.Credentials.from_service_account_file(key_path)
+        except Exception:
+            creds, _ = default()
+
+        vertexai.init(
+            project=settings.vertex_project_id,
+            location=settings.vertex_location,
+            credentials=creds,
+        )
+        _model = GenerativeModel(settings.vertex_model_name)
+        return
+
+    # Intento 2: Gemini API Key (fallback)
+    if settings.gemini_api_key:
+        import google.generativeai as genai
+        genai.configure(api_key=settings.gemini_api_key)
+        _model = genai.GenerativeModel("gemini-1.5-flash")
+        return
+
+    raise RuntimeError(
+        "Sin credenciales de IA. Configura GOOGLE_APPLICATION_CREDENTIALS_VERTEX "
+        "+ VERTEX_PROJECT_ID, o GEMINI_API_KEY como fallback."
+    )
+
+
+def _get_model():
+    global _model
+    if _model is None:
+        _init_model()
+    return _model
 
 
 class GeminiService:
@@ -17,7 +65,6 @@ class GeminiService:
         self.prediccion_svc = PrediccionService()
 
     def generar_resumen(self, municipio_id: int) -> GeminiResumenResponse:
-        # 1. Obtener datos
         municipio_orm = self.municipio_repo.get_by_id(municipio_id)
         if not municipio_orm:
             raise HTTPException(status_code=404, detail="Municipio no encontrado")
@@ -25,19 +72,16 @@ class GeminiService:
         municipio = MunicipioResponse.model_validate(municipio_orm)
         prediccion = self.prediccion_svc.get_by_municipio(municipio_id)
 
-        # 2. Construir prompt
         prompt = self._build_prompt(municipio, prediccion)
 
-        # 3. Llamar a Gemini
         try:
-            response = _model.generate_content(prompt)
+            model = _get_model()
+            response = model.generate_content(prompt)
             texto = response.text
         except Exception as e:
             raise HTTPException(status_code=502, detail=f"Error al consultar Gemini: {str(e)}")
 
         return GeminiResumenResponse(municipio=municipio.nombre, resumen=texto)
-
-    # ── helpers ────────────────────────────────────────────────────────────────
 
     @staticmethod
     def _build_prompt(municipio: MunicipioResponse, prediccion: PrediccionResponse) -> str:
