@@ -62,7 +62,7 @@ def _get_model():
 class GeminiService:
     def __init__(self, db: Session):
         self.municipio_repo = MunicipioRepository(db)
-        self.prediccion_svc = PrediccionService()
+        self.prediccion_svc = PrediccionService(db)
 
     def generar_resumen(self, municipio_id: int) -> GeminiResumenResponse:
         municipio_orm = self.municipio_repo.get_by_id(municipio_id)
