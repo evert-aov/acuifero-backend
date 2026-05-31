@@ -6,7 +6,7 @@
 
 | Recurso | Enlace |
 |---|---|
-| Video demo (YouTube) | *(agregar link tras subir a YouTube)* |
+| Video demo (YouTube) | https://youtu.be/ybwgBlt1zCQ |
 | Documento técnico (PDF) | [`docs/AcuiferoDataSCZ_DocumentoTecnico.pdf`](docs/AcuiferoDataSCZ_DocumentoTecnico.pdf) |
 | Diapositivas (PDF) | [`docs/Acuifero-Data-SCZ-Presentacion.pdf`](docs/Acuifero-Data-SCZ-Presentacion.pdf) |
 | Repositorio público | https://github.com/evert-aov/acuifero-backend |
