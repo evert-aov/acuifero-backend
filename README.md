@@ -290,11 +290,6 @@ Cada SENSOR_INTERVAL_MINUTES minutos:
 
 El sensor petrolero de Camiri (1.84 m y bajando) queda visible aunque los otros sensores del municipio estén más estables.
 
----
-
-## Documentación técnica
-
-- [`docs/sensores-multi-sensor.md`](docs/sensores-multi-sensor.md) — arquitectura completa, fórmulas, ranking de municipios y referencia de archivos
 
 ---
 
