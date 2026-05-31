@@ -80,8 +80,6 @@ MUNICIPIO_PARAMS: dict[int, dict] = {
     14: {"base_nivel": 17.0, "nivel_amp": 1.8, "base_humedad": 50, "base_extraccion": 42,   "trend_m_day":  0.0000, "rain_factor": 0.85},  # Samaipata
     15: {"base_nivel": 25.0, "nivel_amp": 3.0, "base_humedad": 70, "base_extraccion": 72,   "trend_m_day":  0.0000, "rain_factor": 1.30},  # Puerto Suárez
 }
-# fmt: on
-
 
 # ---------------------------------------------------------------------------
 # Helpers de señal
@@ -210,7 +208,6 @@ def generate_readings(
 
 # ---------------------------------------------------------------------------
 # Inserción masiva
-# ---------------------------------------------------------------------------
 
 def _insert_batch(session, records: list[dict]) -> None:
     session.execute(Reading.__table__.insert(), records)
@@ -219,7 +216,6 @@ def _insert_batch(session, records: list[dict]) -> None:
 
 # ---------------------------------------------------------------------------
 # Punto de entrada
-# ---------------------------------------------------------------------------
 
 def seed_sensors(clear_existing: bool = True) -> None:
     log.info("=" * 60)
