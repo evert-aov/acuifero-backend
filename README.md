@@ -1,5 +1,18 @@
 # Acuífero-Data SCZ
 
+**Hackathon Build With AI 2026 — Google Developer Groups | Equipo NINJE**
+
+## Entregables
+
+| Recurso | Enlace |
+|---|---|
+| Video demo (YouTube) | *(agregar link tras subir a YouTube)* |
+| Documento técnico (PDF) | [`docs/AcuiferoDataSCZ_DocumentoTecnico.pdf`](docs/AcuiferoDataSCZ_DocumentoTecnico.pdf) |
+| Diapositivas (PDF) | [`docs/Acuifero-Data-SCZ-Presentacion.pdf`](docs/Acuifero-Data-SCZ-Presentacion.pdf) |
+| Repositorio público | https://github.com/evert-aov/acuifero-backend |
+
+---
+
 ## Información del Proyecto
 
 Acuífero-Data SCZ es una plataforma de inteligencia hídrica para el monitoreo continuo y predicción anticipada del estrés hídrico en los acuíferos del departamento de Santa Cruz, Bolivia.
