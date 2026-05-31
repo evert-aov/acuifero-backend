@@ -32,6 +32,7 @@ async def lifespan(app: FastAPI):
 
     # Scheduler en background (hilo propio, no bloquea el event loop)
     scheduler = BackgroundScheduler(timezone=utc)
+    # Job 1: genera lecturas nuevas en todos los sensores
     scheduler.add_job(
         scheduler_service.tick,
         trigger="interval",
@@ -40,11 +41,21 @@ async def lifespan(app: FastAPI):
         max_instances=1,
         replace_existing=True,
     )
+    # Job 2: recalcula score_riesgo y nivel_riesgo de los municipios
+    scheduler.add_job(
+        scheduler_service.sync_scores,
+        trigger="interval",
+        minutes=settings.score_sync_minutes,
+        id="score_sync",
+        max_instances=1,
+        replace_existing=True,
+    )
     scheduler.start()
-    scheduler_service.set_activo(True, settings.sensor_interval_minutes)
+    scheduler_service.set_activo(True, settings.sensor_interval_minutes, settings.score_sync_minutes)
 
-    # Primer tick inmediato para que haya datos frescos al iniciar
+    # Ticks iniciales: lecturas frescas + scores actualizados al arrancar
     scheduler_service.tick()
+    scheduler_service.sync_scores()
 
     yield
 

@@ -39,11 +39,13 @@ _trends: dict[int, float] = {}
 
 # Estatus del scheduler para el endpoint /sensores/scheduler/status
 _status = {
-    "activo":         False,
-    "ultimo_tick":    None,
-    "lecturas_total": 0,
-    "sensores":       0,
-    "intervalo_min":  None,
+    "activo":               False,
+    "ultimo_tick":          None,
+    "ultimo_sync_scores":   None,
+    "lecturas_total":       0,
+    "sensores":             0,
+    "intervalo_min":        None,
+    "sync_scores_min":      None,
 }
 
 
@@ -214,6 +216,38 @@ def tick() -> int:
 
 
 # ---------------------------------------------------------------------------
+# Sincronización de scores (job independiente)
+# ---------------------------------------------------------------------------
+
+def sync_scores() -> None:
+    """
+    Recalcula score_riesgo y nivel_riesgo de todos los municipios a partir
+    de las lecturas más recientes (últimos 90 días) y los persiste en BD.
+
+    Se ejecuta en un job separado cada SCORE_SYNC_MINUTES minutos para
+    que el dashboard refleje el estado real del acuífero en tiempo real,
+    no el snapshot del último seed.
+    """
+    from app.services.sensor_service import SensorService
+
+    db = SessionLocal()
+    try:
+        # 730 días (2 años) — necesario para eliminar sesgo estacional
+        # El score es un ranking relativo: necesita ver 2 ciclos completos
+        resultados = SensorService(db).sync_all_scores(days=730)
+        _status["ultimo_sync_scores"] = datetime.now(timezone.utc).isoformat()
+        log.info(
+            "Scores actualizados: %s",
+            ", ".join(f"{r['nombre'].split()[0]}={r['score_riesgo']:.2f}" for r in resultados[:5]),
+        )
+    except Exception:
+        db.rollback()
+        log.exception("Error sincronizando scores de municipios.")
+    finally:
+        db.close()
+
+
+# ---------------------------------------------------------------------------
 # Estado público
 # ---------------------------------------------------------------------------
 
@@ -221,7 +255,9 @@ def get_status() -> dict:
     return dict(_status)
 
 
-def set_activo(activo: bool, intervalo: Optional[int] = None) -> None:
+def set_activo(activo: bool, intervalo: Optional[int] = None, sync_intervalo: Optional[int] = None) -> None:
     _status["activo"] = activo
     if intervalo is not None:
         _status["intervalo_min"] = intervalo
+    if sync_intervalo is not None:
+        _status["sync_scores_min"] = sync_intervalo
