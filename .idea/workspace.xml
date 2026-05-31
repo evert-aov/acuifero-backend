@@ -4,52 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="38c3d7d8-98ae-4b8e-9bc8-569137bf3b83" name="Changes" comment="Actualiza el archivo .gitignore para incluir los directorios «backend» y «frontend»">
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/alerta_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/gemini_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/municipio_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/controllers/prediccion_controller.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/database.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dtos/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dtos/alerta_dto.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dtos/municipio_dto.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dtos/prediccion_dto.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/alerta_model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/municipio_model.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repositories/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repositories/alerta_repository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repositories/municipio_repository.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/seeds/seed_data.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/alerta_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/gemini_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/municipio_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/services/prediccion_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cloudbuild.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/angular.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/app.routes.server.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/app.routes.server.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/core/models/municipio.model.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/core/models/municipio.model.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/core/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/core/services/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/core/services/datos-locales.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/core/services/datos-locales.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/dashboard/dashboard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/dashboard/dashboard.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/municipio-detalle/municipio-detalle.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/municipio-detalle/municipio-detalle.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/pages/municipio-detalle/municipio-detalle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/pages/municipio-detalle/municipio-detalle.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/shared/components/gemini-panel/gemini-panel.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/shared/components/gemini-panel/gemini-panel.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/shared/components/gemini-panel/gemini-panel.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/shared/components/gemini-panel/gemini-panel.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/shared/components/gemini-panel/gemini-panel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/shared/components/gemini-panel/gemini-panel.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/app/shared/components/grafico-tendencia/grafico-tendencia.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/shared/components/grafico-tendencia/grafico-tendencia.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" />
-    </list>
+    <list default="true" id="38c3d7d8-98ae-4b8e-9bc8-569137bf3b83" name="Changes" comment="Agrega archivos de configuración del proyecto para la estructura de backend y frontend" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -153,7 +108,7 @@
       <option name="presentableId" value="Default" />
       <updated>1780194203745</updated>
       <workItem from="1780194208292" duration="97000" />
-      <workItem from="1780194351132" duration="1114000" />
+      <workItem from="1780194351132" duration="1487000" />
     </task>
     <task id="LOCAL-00001" summary="Actualiza el archivo .gitignore para incluir los directorios «backend» y «frontend»">
       <option name="closed" value="true" />
@@ -163,12 +118,183 @@
       <option name="project" value="LOCAL" />
       <updated>1780195402253</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Elimina el archivo `__init__.py` innecesario en `app/controllers`">
+      <option name="closed" value="true" />
+      <created>1780195470776</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195470776</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Elimina el archivo `__init__.py` innecesario en `app/dtos`">
+      <option name="closed" value="true" />
+      <created>1780195477383</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195477383</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Elimina los archivos `__init__.py` innecesarios en `app/models`, `app/repositories`, `app/services` y `app`">
+      <option name="closed" value="true" />
+      <created>1780195489335</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195489335</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Elimina la estructura completa del proyecto, incluyendo controladores, modelos, servicios, repositorios, DTOs, configuración, scripts de semillas y archivos Docker.">
+      <option name="closed" value="true" />
+      <created>1780195614388</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195614388</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Zone.js polyfills &amp; remove external dependencies for SSR configuration adjustments">
+      <option name="closed" value="true" />
+      <created>1780195625066</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195625066</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Add `getReadings` and `getLastReading` methods to API service">
+      <option name="closed" value="true" />
+      <created>1780195633418</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195633418</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Establece la configuración regional predeterminada en `es-BO` en la configuración de la aplicación">
+      <option name="closed" value="true" />
+      <created>1780195655429</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195655429</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Agrega ruta 'dashboard' y actualiza el modo de renderizado para rutas no definidas a 'Client'">
+      <option name="closed" value="true" />
+      <created>1780195665706</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195665706</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Agrega manejo de errores en las suscripciones de municipios y alertas en dashboard.ts">
+      <option name="closed" value="true" />
+      <created>1780195673251</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195673252</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Reestructurar el servicio «DatosLocalesService» para que utilice la API en la recuperación de datos">
+      <option name="closed" value="true" />
+      <created>1780195732888</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195732888</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Añade estilos básicos para el componente host en gemini-panel.css">
+      <option name="closed" value="true" />
+      <created>1780195747159</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195747159</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Corrige la invocación de funciones en gemini-panel.html para asegurar el correcto funcionamiento de las condiciones">
+      <option name="closed" value="true" />
+      <created>1780195758390</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195758390</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Refactor gemini-panel to use signals for loading state and resumen">
+      <option name="closed" value="true" />
+      <created>1780195767459</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195767459</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Refactor GraficoTendencia component to support historical readings and improve chart rebuilding logic">
+      <option name="closed" value="true" />
+      <created>1780195777110</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195777110</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Agrega la interfaz Reading para representar datos de mediciones ambientales">
+      <option name="closed" value="true" />
+      <created>1780195787151</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195787151</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Actualiza la vista de municipio-detalle para incluir lecturas en tiempo real y mejorar la presentación de datos">
+      <option name="closed" value="true" />
+      <created>1780195796547</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195796547</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Refactor MunicipioDetalle component to use signals for state management and improve data fetching with forkJoin">
+      <option name="closed" value="true" />
+      <created>1780195810312</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195810312</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Agrega zone.js como dependencia en package.json y package-lock.json">
+      <option name="closed" value="true" />
+      <created>1780195820207</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195820207</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Agrega archivos de configuración del proyecto para la estructura de backend y frontend">
+      <option name="closed" value="true" />
+      <created>1780195835612</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1780195835612</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Actualiza el archivo .gitignore para incluir los directorios «backend» y «frontend»" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Elimina el archivo `__init__.py` innecesario en `app/controllers`" />
+    <MESSAGE value="Elimina el archivo `__init__.py` innecesario en `app/dtos`" />
+    <MESSAGE value="Elimina los archivos `__init__.py` innecesarios en `app/models`, `app/repositories`, `app/services` y `app`" />
+    <MESSAGE value="Elimina la estructura completa del proyecto, incluyendo controladores, modelos, servicios, repositorios, DTOs, configuración, scripts de semillas y archivos Docker." />
+    <MESSAGE value="Add Zone.js polyfills &amp; remove external dependencies for SSR configuration adjustments" />
+    <MESSAGE value="Add `getReadings` and `getLastReading` methods to API service" />
+    <MESSAGE value="Establece la configuración regional predeterminada en `es-BO` en la configuración de la aplicación" />
+    <MESSAGE value="Agrega ruta 'dashboard' y actualiza el modo de renderizado para rutas no definidas a 'Client'" />
+    <MESSAGE value="Agrega manejo de errores en las suscripciones de municipios y alertas en dashboard.ts" />
+    <MESSAGE value="Reestructurar el servicio «DatosLocalesService» para que utilice la API en la recuperación de datos" />
+    <MESSAGE value="Añade estilos básicos para el componente host en gemini-panel.css" />
+    <MESSAGE value="Corrige la invocación de funciones en gemini-panel.html para asegurar el correcto funcionamiento de las condiciones" />
+    <MESSAGE value="Refactor gemini-panel to use signals for loading state and resumen" />
+    <MESSAGE value="Refactor GraficoTendencia component to support historical readings and improve chart rebuilding logic" />
+    <MESSAGE value="Agrega la interfaz Reading para representar datos de mediciones ambientales" />
+    <MESSAGE value="Actualiza la vista de municipio-detalle para incluir lecturas en tiempo real y mejorar la presentación de datos" />
+    <MESSAGE value="Refactor MunicipioDetalle component to use signals for state management and improve data fetching with forkJoin" />
+    <MESSAGE value="Agrega zone.js como dependencia en package.json y package-lock.json" />
+    <MESSAGE value="Agrega archivos de configuración del proyecto para la estructura de backend y frontend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Agrega archivos de configuración del proyecto para la estructura de backend y frontend" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
