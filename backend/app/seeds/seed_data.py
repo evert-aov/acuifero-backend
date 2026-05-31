@@ -8,22 +8,25 @@ from app.models.alerta_model import Alerta
 
 Base.metadata.create_all(bind=engine)
 
+# score_riesgo y nivel_riesgo se calculan automáticamente desde los sensores.
+# Ejecutar después del seed: POST /sensores/sync-all
+# o: python -m app.seeds.seed_data  (llama a sync_all_scores automáticamente si hay sensores)
 _MUNICIPIOS = [
-    {"id": 1,  "nombre": "Santa Cruz de la Sierra", "lat": -17.7833, "lng": -63.1821, "region": "metropolitana",   "poblacion": 1453549, "nivel_riesgo": "medio",   "score_riesgo": 0.45},
-    {"id": 2,  "nombre": "Charagua",                "lat": -19.7833, "lng": -63.2167, "region": "chaco",           "poblacion": 31823,   "nivel_riesgo": "critico",  "score_riesgo": 0.91},
-    {"id": 3,  "nombre": "Cabezas",                 "lat": -18.7667, "lng": -63.3833, "region": "chaco",           "poblacion": 28450,   "nivel_riesgo": "critico",  "score_riesgo": 0.88},
-    {"id": 4,  "nombre": "San Ignacio de Velasco",  "lat": -16.3667, "lng": -60.9500, "region": "chiquitania",     "poblacion": 52300,   "nivel_riesgo": "alto",     "score_riesgo": 0.72},
-    {"id": 5,  "nombre": "Concepción",              "lat": -16.1333, "lng": -62.0167, "region": "chiquitania",     "poblacion": 39800,   "nivel_riesgo": "alto",     "score_riesgo": 0.68},
-    {"id": 6,  "nombre": "San José de Chiquitos",   "lat": -17.8333, "lng": -60.7500, "region": "chiquitania",     "poblacion": 47200,   "nivel_riesgo": "alto",     "score_riesgo": 0.71},
-    {"id": 7,  "nombre": "Montero",                 "lat": -17.3333, "lng": -63.2500, "region": "norte_integrado", "poblacion": 109800,  "nivel_riesgo": "medio",   "score_riesgo": 0.52},
-    {"id": 8,  "nombre": "Warnes",                  "lat": -17.5000, "lng": -63.1667, "region": "norte_integrado", "poblacion": 91200,   "nivel_riesgo": "medio",   "score_riesgo": 0.48},
-    {"id": 9,  "nombre": "Mineros",                 "lat": -17.1167, "lng": -63.0833, "region": "norte_integrado", "poblacion": 79300,   "nivel_riesgo": "bajo",     "score_riesgo": 0.28},
-    {"id": 10, "nombre": "Camiri",                  "lat": -20.0333, "lng": -63.5167, "region": "chaco",           "poblacion": 43200,   "nivel_riesgo": "critico",  "score_riesgo": 0.85},
-    {"id": 11, "nombre": "Portachuelo",             "lat": -17.3500, "lng": -63.3833, "region": "norte_integrado", "poblacion": 45600,   "nivel_riesgo": "bajo",     "score_riesgo": 0.22},
-    {"id": 12, "nombre": "San Ramón",               "lat": -16.5667, "lng": -62.5333, "region": "chiquitania",     "poblacion": 18900,   "nivel_riesgo": "alto",     "score_riesgo": 0.74},
-    {"id": 13, "nombre": "Vallegrande",             "lat": -18.4833, "lng": -64.1000, "region": "vallegrande",     "poblacion": 32100,   "nivel_riesgo": "medio",   "score_riesgo": 0.55},
-    {"id": 14, "nombre": "Samaipata",               "lat": -18.1833, "lng": -63.8667, "region": "vallegrande",     "poblacion": 14200,   "nivel_riesgo": "bajo",     "score_riesgo": 0.31},
-    {"id": 15, "nombre": "Puerto Suárez",           "lat": -18.9500, "lng": -57.8000, "region": "pantanal",        "poblacion": 24700,   "nivel_riesgo": "bajo",     "score_riesgo": 0.18},
+    {"id": 1,  "nombre": "Santa Cruz de la Sierra", "lat": -17.7833, "lng": -63.1821, "region": "metropolitana",   "poblacion": 1453549},
+    {"id": 2,  "nombre": "Charagua",                "lat": -19.7833, "lng": -63.2167, "region": "chaco",           "poblacion": 31823  },
+    {"id": 3,  "nombre": "Cabezas",                 "lat": -18.7667, "lng": -63.3833, "region": "chaco",           "poblacion": 28450  },
+    {"id": 4,  "nombre": "San Ignacio de Velasco",  "lat": -16.3667, "lng": -60.9500, "region": "chiquitania",     "poblacion": 52300  },
+    {"id": 5,  "nombre": "Concepción",              "lat": -16.1333, "lng": -62.0167, "region": "chiquitania",     "poblacion": 39800  },
+    {"id": 6,  "nombre": "San José de Chiquitos",   "lat": -17.8333, "lng": -60.7500, "region": "chiquitania",     "poblacion": 47200  },
+    {"id": 7,  "nombre": "Montero",                 "lat": -17.3333, "lng": -63.2500, "region": "norte_integrado", "poblacion": 109800 },
+    {"id": 8,  "nombre": "Warnes",                  "lat": -17.5000, "lng": -63.1667, "region": "norte_integrado", "poblacion": 91200  },
+    {"id": 9,  "nombre": "Mineros",                 "lat": -17.1167, "lng": -63.0833, "region": "norte_integrado", "poblacion": 79300  },
+    {"id": 10, "nombre": "Camiri",                  "lat": -20.0333, "lng": -63.5167, "region": "chaco",           "poblacion": 43200  },
+    {"id": 11, "nombre": "Portachuelo",             "lat": -17.3500, "lng": -63.3833, "region": "norte_integrado", "poblacion": 45600  },
+    {"id": 12, "nombre": "San Ramón",               "lat": -16.5667, "lng": -62.5333, "region": "chiquitania",     "poblacion": 18900  },
+    {"id": 13, "nombre": "Vallegrande",             "lat": -18.4833, "lng": -64.1000, "region": "vallegrande",     "poblacion": 32100  },
+    {"id": 14, "nombre": "Samaipata",               "lat": -18.1833, "lng": -63.8667, "region": "vallegrande",     "poblacion": 14200  },
+    {"id": 15, "nombre": "Puerto Suárez",           "lat": -18.9500, "lng": -57.8000, "region": "pantanal",        "poblacion": 24700  },
 ]
 
 _ALERTAS = [

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import Base, engine
-from app.controllers import municipio_controller, prediccion_controller, alerta_controller, gemini_controller, reading_controller
+from app.controllers import municipio_controller, prediccion_controller, alerta_controller, gemini_controller, reading_controller, sensor_controller
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,6 +21,7 @@ app.include_router(prediccion_controller.router)
 app.include_router(alerta_controller.router)
 app.include_router(gemini_controller.router)
 app.include_router(reading_controller.router)
+app.include_router(sensor_controller.router)
 
 @app.get("/")
 def root():

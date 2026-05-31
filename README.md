@@ -18,34 +18,43 @@ acuifero-data-backend/
 │   │   │   ├── gemini_controller.py
 │   │   │   ├── municipio_controller.py
 │   │   │   ├── prediccion_controller.py
-│   │   │   └── reading_controller.py
+│   │   │   ├── reading_controller.py
+│   │   │   └── sensor_controller.py      # ← Multi-sensor: scores, live, sync
 │   │   ├── dtos/                   # Data Transfer Objects (schemas Pydantic)
 │   │   │   ├── alerta_dto.py
 │   │   │   ├── municipio_dto.py
 │   │   │   ├── prediccion_dto.py
-│   │   │   └── reading_dto.py
+│   │   │   ├── reading_dto.py
+│   │   │   └── sensor_dto.py             # ← SensorScoreResponse, MunicipioSensorAggregation
 │   │   ├── models/                 # Modelos ORM (SQLAlchemy)
 │   │   │   ├── alerta_model.py
 │   │   │   ├── municipio_model.py
-│   │   │   └── reading_model.py
+│   │   │   ├── reading_model.py          # ← +sensor_id FK
+│   │   │   └── sensor_model.py           # ← NUEVO: tabla sensores
 │   │   ├── repositories/           # Acceso a datos (patrón Repository)
 │   │   │   ├── alerta_repository.py
 │   │   │   ├── municipio_repository.py
-│   │   │   └── reading_repository.py
+│   │   │   ├── reading_repository.py
+│   │   │   └── sensor_repository.py      # ← NUEVO
 │   │   ├── services/               # Lógica de negocio
 │   │   │   ├── alerta_service.py
 │   │   │   ├── gemini_service.py
 │   │   │   ├── municipio_service.py
-│   │   │   └── prediccion_service.py
+│   │   │   ├── prediccion_service.py
+│   │   │   └── sensor_service.py         # ← EWMA scoring + Max-Pooling + Min-Max
 │   │   ├── seeds/                  # Datos de prueba / mock data
 │   │   │   ├── seed_data.py
-│   │   │   └── seed_sensors.py
+│   │   │   ├── seed_sensors.py
+│   │   │   └── seed_multi_sensor.py      # ← NUEVO: 51 sensores, 37k lecturas
 │   │   ├── config.py               # Configuración de la aplicación
 │   │   ├── database.py             # Conexión y sesión con PostgreSQL
 │   │   └── main.py                 # Punto de entrada FastAPI
 │   ├── Dockerfile
 │   ├── cloudbuild.yaml
 │   └── requirements.txt
+│
+├── docs/
+│   └── sensores-multi-sensor.md   # ← Arquitectura y algoritmo multi-sensor
 │
 ├── frontend/                       # SPA con Angular 21
 │   ├── src/
@@ -145,6 +154,23 @@ uvicorn app.main:app --reload
 La API estará disponible en: `http://localhost:8000`  
 Documentación Swagger: `http://localhost:8000/docs`
 
+### Poblar la base de datos
+
+```bash
+cd backend
+
+# 1. Municipios y alertas iniciales
+python -m app.seeds.seed_data
+
+# 2. Sensores físicos (3–5 por municipio) + 2 años de lecturas diarias
+python -m app.seeds.seed_multi_sensor
+
+# 3. Calcular score_riesgo y nivel_riesgo desde los datos reales
+curl -X POST "http://localhost:8000/sensores/sync-all?days=730"
+```
+
+> El paso 3 ejecuta el algoritmo EWMA Composite + Min-Max Cross-Normalization sobre los 51 sensores y persiste los resultados en la tabla `municipios`. Ver detalles en [`docs/sensores-multi-sensor.md`](docs/sensores-multi-sensor.md).
+
 ### Frontend
 ```bash
 cd frontend
@@ -159,6 +185,29 @@ Crear un archivo `.env` en `/backend`:
 DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/acuifero_db
 GEMINI_API_KEY=tu_api_key
 ```
+
+---
+
+## 🔬 Módulo Multi-Sensor y Algoritmo de Riesgo
+
+El sistema implementa una arquitectura de monitoreo distribuido con **3–5 sensores físicos por municipio**, cada uno con comportamiento independiente según su zona (urbano, agrícola, minero, reserva, etc.).
+
+### Pipeline de riesgo
+
+1. **Ingesta**: lecturas diarias por sensor en tabla `readings` (51 sensores, 37 k lecturas/año)
+2. **Evaluación individual**: algoritmo **EWMA Composite** — cruce de medias exponenciales (7d vs 90d) detecta caídas sostenidas distinguiéndolas de variación estacional
+3. **Agregación por peor escenario**: **Max-Pooling** `= 0.7 × max(scores) + 0.3 × promedio_cuadrático` — un sensor en crisis no queda oculto por los demás
+4. **Calibración relativa**: **Min-Max Cross-Normalization** con γ=0.5 entre todos los municipios — el score refleja posición relativa en el sistema
+5. **Resultado**: un único `score_riesgo` (0–1) y `nivel_riesgo` (bajo/medio/alto/crítico) por municipio → Leaflet dibuja un círculo con el color correspondiente
+
+### Por qué no AVG simple
+
+| Escenario: 4 sensores en 0.2 + 1 en 0.9 | Resultado | Decisión |
+|---|---|---|
+| Promedio simple | 0.34 — medio | Alcalde no actúa |
+| Max-Pooling (este sistema) | 0.87 — **crítico** | Alcalde recibe alerta |
+
+Ver documentación completa: [`docs/sensores-multi-sensor.md`](docs/sensores-multi-sensor.md)
 
 ---
 
