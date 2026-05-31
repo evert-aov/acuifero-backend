@@ -16,12 +16,25 @@ Chart.register(...registerables);
   styleUrl: './grafico-tendencia.css',
 })
 export class GraficoTendencia implements AfterViewInit, OnChanges, OnDestroy {
-  /** Modo proyección (6 meses, fallback cuando no hay readings) */
+  /** Datos históricos reales — cuando se pasa, tiene prioridad en modo 'auto' */
+  @Input() readings: Reading[] = [];
+
+  /** Proyección 6 meses (% del pico histórico) */
   @Input() proyeccion: number[] = [];
+
+  /** Precipitación mensual histórica (mm) */
   @Input() precipitacion: number[] = [];
 
-  /** Modo histórico — cuando se pasa, tiene prioridad sobre proyeccion */
-  @Input() readings: Reading[] = [];
+  /**
+   * Modo de renderizado:
+   *   'auto'      → usa readings si existen, sino proyeccion
+   *   'historico' → fuerza el gráfico de lecturas reales
+   *   'proyeccion'→ fuerza el gráfico de proyección a 6 meses
+   */
+  @Input() mode: 'auto' | 'historico' | 'proyeccion' = 'auto';
+
+  /** Umbral crítico en % del pico histórico (línea de referencia en modo proyección) */
+  @Input() umbralCritico = 15;
 
   @ViewChild('chartCanvas', { static: false }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -52,7 +65,11 @@ export class GraficoTendencia implements AfterViewInit, OnChanges, OnDestroy {
     const ctx = this.canvasRef.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    const useReadings = this.readings.length > 0;
+    const useReadings =
+      this.mode === 'historico'  ? true :
+      this.mode === 'proyeccion' ? false :
+      this.readings.length > 0;
+
     this.chart = new Chart(ctx, useReadings ? this.configHistorico() : this.configProyeccion());
   }
 
@@ -61,8 +78,8 @@ export class GraficoTendencia implements AfterViewInit, OnChanges, OnDestroy {
     const labels = this.readings.map(r =>
       new Date(r.timestamp).toLocaleDateString('es-BO', { day: '2-digit', month: 'short' })
     );
-    const nivel   = this.readings.map(r => r.nivel_freatico_m);
-    const precip  = this.readings.map(r => r.precipitacion_mm);
+    const nivel  = this.readings.map(r => r.nivel_freatico_m);
+    const precip = this.readings.map(r => r.precipitacion_mm);
 
     return {
       type: 'line',
@@ -99,13 +116,14 @@ export class GraficoTendencia implements AfterViewInit, OnChanges, OnDestroy {
     };
   }
 
-  // ── Gráfico de proyección 6 meses (fallback) ──────────────────────────────
+  // ── Gráfico de proyección 6 meses ─────────────────────────────────────────
   private configProyeccion(): ChartConfiguration {
-    const meses = ['Mes 1', 'Mes 2', 'Mes 3', 'Mes 4', 'Mes 5', 'Mes 6'];
+    const labels = this.getMonthLabels(6);
+
     return {
       type: 'line',
       data: {
-        labels: meses,
+        labels,
         datasets: [
           {
             label: 'Nivel freático (%)',
@@ -122,7 +140,18 @@ export class GraficoTendencia implements AfterViewInit, OnChanges, OnDestroy {
             pointRadius: 4,
           },
           {
-            label: 'Precipitación (mm)',
+            label: `Umbral crítico (${this.umbralCritico}%)`,
+            data: new Array(6).fill(this.umbralCritico),
+            borderColor: '#dc2626',
+            borderWidth: 1.5,
+            borderDash: [5, 4],
+            fill: false,
+            yAxisID: 'y',
+            pointRadius: 0,
+            tension: 0,
+          },
+          {
+            label: 'Precipitación mm/mes',
             data: this.precipitacion,
             borderColor: '#f59e0b',
             backgroundColor: 'rgba(245,158,11,0.06)',
@@ -139,6 +168,18 @@ export class GraficoTendencia implements AfterViewInit, OnChanges, OnDestroy {
       },
       options: this.baseOptions('Nivel freático (%)', '#84CC16', 'Precipitación (mm)', '#f59e0b', 0, 100),
     };
+  }
+
+  /** Genera etiquetas de mes real para los próximos N meses */
+  private getMonthLabels(count: number): string[] {
+    const nombres = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const labels: string[] = [];
+    const hoy = new Date();
+    for (let i = 1; i <= count; i++) {
+      const d = new Date(hoy.getFullYear(), hoy.getMonth() + i, 1);
+      labels.push(`${nombres[d.getMonth()]} '${String(d.getFullYear()).slice(2)}`);
+    }
+    return labels;
   }
 
   private baseOptions(
