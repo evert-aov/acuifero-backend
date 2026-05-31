@@ -164,19 +164,15 @@ def generate_readings(
     humedad[extreme_mask] = rng.uniform(92.0, 100.0, size=int(extreme_mask.sum()))
     humedad = np.clip(humedad, 10.0, 100.0)
 
-    # ------------------------------------------------------------------
     # Extracción (litros/segundo)
     # Más alta en época seca; pequeña variación diaria operacional
-    # ------------------------------------------------------------------
     base_e = params["base_extraccion"]
     ext_season = base_e * (1.0 + 0.28 * np.cos(phi))         # +28% en seca
     ext_jitter = rng.normal(0.0, base_e * 0.04, n)
     extraccion = np.clip(ext_season + ext_jitter, base_e * 0.45, base_e * 1.85)
 
-    # ------------------------------------------------------------------
     # Nivel freático (m)
     # Estacional + tendencia lineal + ruido AR(1) + recarga diferida
-    # ------------------------------------------------------------------
     base_n = params["base_nivel"]
     amp_n  = params["nivel_amp"]
 
@@ -216,7 +212,6 @@ def _insert_batch(session, records: list[dict]) -> None:
 
 # ---------------------------------------------------------------------------
 # Punto de entrada
-
 def seed_sensors(clear_existing: bool = True) -> None:
     log.info("=" * 60)
     log.info("  Mock Sensor Generator — Acuífero-Data SCZ")
