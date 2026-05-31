@@ -34,3 +34,24 @@ export interface Reading {
   extraccion_lps: number;
   precipitacion_mm: number;
 }
+
+export interface SensorScore {
+  sensor_id: number;
+  nombre: string;
+  zona: string;
+  lat: number;
+  lng: number;
+  score: number;
+  nivel_freatico_m: number;
+  tendencia_m_dia: number;
+  nivel_riesgo: 'bajo' | 'medio' | 'alto' | 'critico';
+  timestamp: string;
+}
+
+export interface MunicipioSensorAggregation {
+  municipio_id: number;
+  score_agregado: number;
+  nivel_riesgo: 'bajo' | 'medio' | 'alto' | 'critico';
+  sensores: SensorScore[];
+  sensor_critico: SensorScore | null;
+}

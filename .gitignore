@@ -48,3 +48,13 @@ frontend/.idea/
 .DS_Store
 Thumbs.db
 .env.production
+
+.venv/
+
+
+
+
+
+# ====== Especifico =====
+# Hola Mundo
+#BUILDIA

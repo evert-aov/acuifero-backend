@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, afterNextRender } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, SimpleChanges, afterNextRender } from '@angular/core';
 import { Municipio } from '../../../core/models/municipio.model';
 
 @Component({
@@ -8,7 +8,7 @@ import { Municipio } from '../../../core/models/municipio.model';
   templateUrl: './mapa-scz.html',
   styleUrl: './mapa-scz.css',
 })
-export class MapaScz implements OnChanges {
+export class MapaScz implements OnChanges, OnDestroy {
   @Input() municipios: Municipio[] = [];
   @Output() municipioSeleccionado = new EventEmitter<Municipio>();
 
@@ -38,6 +38,13 @@ export class MapaScz implements OnChanges {
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+  }
+
   private async initMap(): Promise<void> {
     const L = await import('leaflet');
     this.L = L;
@@ -46,6 +53,7 @@ export class MapaScz implements OnChanges {
       center: [-17.5, -62],
       zoom: 6,
       zoomControl: false,
+      scrollWheelZoom: false,
     });
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {

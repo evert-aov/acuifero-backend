@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Municipio, Prediccion, Alerta, Reading } from '../models/municipio.model';
+import { Municipio, Prediccion, Alerta, Reading, MunicipioSensorAggregation } from '../models/municipio.model';
 import { Api } from './api';
 
 @Injectable({ providedIn: 'root' })
@@ -34,5 +34,9 @@ export class DatosLocalesService {
 
   getLastReading(municipioId: number): Observable<Reading> {
     return this.api.getLastReading(municipioId);
+  }
+
+  getSensorScores(municipioId: number, days = 730): Observable<MunicipioSensorAggregation> {
+    return this.api.getSensorScores(municipioId, days);
   }
 }

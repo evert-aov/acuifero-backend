@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { Municipio, Prediccion, Alerta, Reading } from '../models/municipio.model';
+import { Municipio, Prediccion, Alerta, Reading, MunicipioSensorAggregation } from '../models/municipio.model';
 
 @Injectable({ providedIn: 'root' })
 export class Api {
@@ -16,4 +16,5 @@ export class Api {
   getResumenGemini(id: number)             { return this.http.post<{ resumen: string; municipio: string }>(`${this.base}/gemini/resumen`, { municipio_id: id }); }
   getReadings(id: number, days = 90)       { return this.http.get<Reading[]>(`${this.base}/readings/${id}?days=${days}`); }
   getLastReading(id: number)               { return this.http.get<Reading>(`${this.base}/readings/${id}/last`); }
+  getSensorScores(id: number, days = 730)  { return this.http.get<MunicipioSensorAggregation>(`${this.base}/sensores/${id}/scores?days=${days}`); }
 }
