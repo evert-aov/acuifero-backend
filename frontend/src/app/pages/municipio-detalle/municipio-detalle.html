@@ -120,18 +120,7 @@
             <span class="text-xs font-bold uppercase tracking-widest text-jichi-muted">Predicción EWMA — proyección 6 meses</span>
           </div>
 
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-            <!-- Meses hasta crisis -->
-            <div class="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white">
-              <div class="text-3xl font-bold tabular-nums leading-none mb-1"
-                   [style.color]="tendenciaInfo()?.color">
-                {{ pred.meses_criticos >= 60 ? '60+' : pred.meses_criticos }}
-              </div>
-              <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted mt-1">
-                Meses hasta<br>situación crítica
-              </div>
-            </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <!-- Tendencia -->
             <div class="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white">
