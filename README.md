@@ -1,217 +1,291 @@
-# 💧 Acuífero-Data SCZ
+# Acuífero-Data SCZ
 
-## 📖 Información del Proyecto
-Acuífero-Data SCZ es una plataforma de inteligencia hídrica diseñada para el monitoreo continuo y la predicción anticipada del estrés hídrico en los acuíferos subterráneos del departamento de Santa Cruz.
+## Información del Proyecto
 
-Mediante modelos de Machine Learning e Inteligencia Artificial Generativa, el sistema procesa datos meteorológicos y tasas de extracción para predecir sequías o desbordes con meses de anticipación, permitiendo a las autoridades tomar decisiones preventivas.
+Acuífero-Data SCZ es una plataforma de inteligencia hídrica para el monitoreo continuo y predicción anticipada del estrés hídrico en los acuíferos del departamento de Santa Cruz, Bolivia.
+
+El sistema procesa datos de sensores distribuidos en tiempo real, aplica modelos de series temporales (EWMA + regresión lineal) para predecir el horizonte de crisis de cada municipio con meses de anticipación, e integra análisis ejecutivo con Gemini AI.
 
 ---
 
-## 🏗️ Estructura del Proyecto
+## Arquitectura general
+
+```
+Sensores físicos (3–5 / municipio)
+        │  lecturas cada 10 min (APScheduler)
+        ▼
+  PostgreSQL — tabla readings (sensor_id, timestamp, nivel_freatico_m, …)
+        │
+        ├─ EWMA Composite Score por sensor
+        ├─ Max-Pooling → score del municipio
+        ├─ Min-Max Cross-Normalization → riesgo relativo
+        └─ EWMA + Regresión lineal dual → predicción 6 meses
+        │
+  FastAPI REST API
+        │
+  Angular 21 SPA — mapa Leaflet, gráficos Chart.js, análisis Gemini
+```
+
+---
+
+## Estructura del Proyecto
 
 ```
 acuifero-data-backend/
-├── backend/                        # API REST con FastAPI
+├── backend/
 │   ├── app/
-│   │   ├── controllers/            # Endpoints y rutas HTTP
-│   │   │   ├── alerta_controller.py
-│   │   │   ├── gemini_controller.py
+│   │   ├── controllers/
 │   │   │   ├── municipio_controller.py
-│   │   │   ├── prediccion_controller.py
 │   │   │   ├── reading_controller.py
-│   │   │   └── sensor_controller.py      # ← Multi-sensor: scores, live, sync
-│   │   ├── dtos/                   # Data Transfer Objects (schemas Pydantic)
-│   │   │   ├── alerta_dto.py
-│   │   │   ├── municipio_dto.py
-│   │   │   ├── prediccion_dto.py
-│   │   │   ├── reading_dto.py
-│   │   │   └── sensor_dto.py             # ← SensorScoreResponse, MunicipioSensorAggregation
-│   │   ├── models/                 # Modelos ORM (SQLAlchemy)
-│   │   │   ├── alerta_model.py
+│   │   │   ├── sensor_controller.py       # scores, live, sync-all, scheduler status
+│   │   │   ├── prediccion_controller.py   # predicción real desde sensores
+│   │   │   ├── alerta_controller.py
+│   │   │   └── gemini_controller.py
+│   │   ├── models/
 │   │   │   ├── municipio_model.py
-│   │   │   ├── reading_model.py          # ← +sensor_id FK
-│   │   │   └── sensor_model.py           # ← NUEVO: tabla sensores
-│   │   ├── repositories/           # Acceso a datos (patrón Repository)
-│   │   │   ├── alerta_repository.py
+│   │   │   ├── sensor_model.py            # tabla sensores (zona, offset_nivel, factor_extrac)
+│   │   │   ├── reading_model.py           # +sensor_id FK
+│   │   │   └── alerta_model.py
+│   │   ├── services/
+│   │   │   ├── sensor_service.py          # EWMA scoring + Max-Pooling + Min-Max
+│   │   │   ├── prediccion_service.py      # EWMA + regresión lineal dual (365d/90d)
+│   │   │   ├── scheduler_service.py       # APScheduler — tick cada N minutos
+│   │   │   ├── municipio_service.py
+│   │   │   ├── alerta_service.py
+│   │   │   └── gemini_service.py
+│   │   ├── repositories/
+│   │   │   ├── sensor_repository.py
 │   │   │   ├── municipio_repository.py
 │   │   │   ├── reading_repository.py
-│   │   │   └── sensor_repository.py      # ← NUEVO
-│   │   ├── services/               # Lógica de negocio
-│   │   │   ├── alerta_service.py
-│   │   │   ├── gemini_service.py
-│   │   │   ├── municipio_service.py
-│   │   │   ├── prediccion_service.py
-│   │   │   └── sensor_service.py         # ← EWMA scoring + Max-Pooling + Min-Max
-│   │   ├── seeds/                  # Datos de prueba / mock data
-│   │   │   ├── seed_data.py
-│   │   │   ├── seed_sensors.py
-│   │   │   └── seed_multi_sensor.py      # ← NUEVO: 51 sensores, 37k lecturas
-│   │   ├── config.py               # Configuración de la aplicación
-│   │   ├── database.py             # Conexión y sesión con PostgreSQL
-│   │   └── main.py                 # Punto de entrada FastAPI
+│   │   │   └── alerta_repository.py
+│   │   ├── dtos/
+│   │   │   ├── sensor_dto.py              # SensorScoreResponse, MunicipioSensorAggregation
+│   │   │   ├── prediccion_dto.py
+│   │   │   ├── municipio_dto.py
+│   │   │   ├── reading_dto.py
+│   │   │   └── alerta_dto.py
+│   │   ├── seeds/
+│   │   │   ├── seed_data.py               # municipios + alertas (sin scores hardcodeados)
+│   │   │   ├── seed_multi_sensor.py       # 51 sensores + 730 días de lecturas
+│   │   │   └── seed_sensors.py            # seed original (1 lectura/municipio/día)
+│   │   ├── config.py                      # +SENSOR_INTERVAL_MINUTES
+│   │   ├── database.py
+│   │   └── main.py                        # lifespan: scheduler + precompute trends
+│   ├── .keys/                             # credenciales Vertex AI (no en git)
+│   ├── .env                               # variables de entorno (no en git)
 │   ├── Dockerfile
 │   ├── cloudbuild.yaml
 │   └── requirements.txt
 │
+├── frontend/
+│   └── src/app/
+│       ├── core/
+│       │   ├── models/municipio.model.ts  # +SensorScore, MunicipioSensorAggregation
+│       │   └── services/
+│       │       ├── api.ts                 # +getSensorScores()
+│       │       └── datos-locales.service.ts
+│       ├── pages/
+│       │   ├── dashboard/                 # mapa + KPIs + tabla (datos reales)
+│       │   └── municipio-detalle/         # predicción + tabs histórico/proyección + sensores
+│       └── shared/components/
+│           ├── grafico-tendencia/         # +mode input, meses reales, umbral crítico
+│           ├── mapa-scz/                  # Leaflet con ngOnDestroy + scrollWheelZoom:false
+│           ├── gemini-panel/
+│           ├── alerta-card/
+│           ├── stat-card/
+│           └── navbar/
+│
 ├── docs/
-│   └── sensores-multi-sensor.md   # ← Arquitectura y algoritmo multi-sensor
-│
-├── frontend/                       # SPA con Angular 21
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── core/
-│   │   │   │   ├── models/
-│   │   │   │   │   └── municipio.model.ts
-│   │   │   │   └── services/
-│   │   │   │       ├── alerta.ts           # Servicio de alertas
-│   │   │   │       ├── api.ts              # Cliente HTTP base
-│   │   │   │       ├── datos-locales.service.ts
-│   │   │   │       ├── gemini.ts           # Integración con Gemini API
-│   │   │   │       └── municipio.ts        # Servicio de municipios
-│   │   │   ├── pages/
-│   │   │   │   ├── dashboard/              # Dashboard principal con métricas
-│   │   │   │   ├── landing/                # Página de inicio
-│   │   │   │   └── municipio-detalle/      # Vista detalle por municipio
-│   │   │   ├── shared/
-│   │   │   │   └── components/
-│   │   │   │       ├── alerta-card/        # Tarjeta de alertas hídricas
-│   │   │   │       ├── gemini-panel/       # Panel de análisis con IA
-│   │   │   │       ├── grafico-tendencia/  # Gráfico de tendencias históricas
-│   │   │   │       ├── mapa-scz/           # Mapa interactivo de Santa Cruz
-│   │   │   │       ├── navbar/             # Barra de navegación
-│   │   │   │       └── stat-card/          # Tarjeta de estadísticas
-│   │   │   ├── app.routes.ts               # Configuración de rutas
-│   │   │   └── app.config.ts               # Configuración principal
-│   │   ├── environments/
-│   │   │   └── environment.ts              # Variables de entorno
-│   │   ├── index.html
-│   │   ├── main.ts
-│   │   ├── main.server.ts                  # SSR entry point
-│   │   ├── server.ts                       # Express server (SSR)
-│   │   └── styles.css
-│   ├── public/                             # Assets estáticos
-│   ├── angular.json
-│   ├── tailwind.config.js
-│   └── package.json
-│
-├── docs/                           # Documentación técnica y arquitectura
-├── scripts/                        # Scripts de generación de mock data
+│   └── sensores-multi-sensor.md          # algoritmo completo documentado
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 🚀 Tecnologías y Versiones
-
-### Frontend
-| Tecnología | Versión |
-|---|---|
-| Angular | 21.2.x |
-| Tailwind CSS | 3.4.x |
-| Leaflet.js | - |
-| Chart.js | - |
-| TypeScript | 5.x |
+## Tecnologías
 
 ### Backend
-| Tecnología | Versión |
-|---|---|
-| Python | 3.12 |
-| FastAPI | 0.111.0 |
-| Uvicorn | 0.29.0 |
-| SQLAlchemy | 2.0.30 |
-| Pydantic | 2.7.1 |
-| Alembic | 1.13.1 |
-| NumPy | ≥ 1.26.0 |
-| Pandas | ≥ 2.2.0 |
+| Tecnología | Versión | Uso |
+|---|---|---|
+| Python | 3.12 | |
+| FastAPI | 0.111.0 | API REST + lifespan events |
+| APScheduler | 3.10.4 | Monitoreo en tiempo real (tick cada N min) |
+| SQLAlchemy | 2.0.30 | ORM + consultas |
+| NumPy / Pandas | ≥1.26 / ≥2.2 | EWMA, regresión lineal, simulación |
+| Pydantic | 2.7.1 | Schemas y validación |
+| PostgreSQL | 18 | Base de datos principal |
 
-### Base de Datos
-| Tecnología | Versión |
-|---|---|
-| PostgreSQL | 18 |
-| psycopg2-binary | 2.9.9 |
+### Frontend
+| Tecnología | Versión | Uso |
+|---|---|---|
+| Angular | 21.2.x | SPA standalone components |
+| Leaflet.js | — | Mapa interactivo de riesgo |
+| Chart.js | — | Gráfico histórico y proyección |
+| Tailwind CSS | 3.4.x | Estilos |
 
 ### Inteligencia Artificial
-| Tecnología | Versión |
+| Tecnología | Uso |
 |---|---|
-| Gemini API (google-generativeai) | 0.5.4 |
-| Google Cloud AI Platform | ≥ 1.40.0 |
-| Prophet | - |
-| XGBoost | - |
+| Gemini 2.5 Flash (Vertex AI) | Análisis ejecutivo por municipio |
+| EWMA + Regresión lineal | Predicción del horizonte de crisis |
+| Max-Pooling ponderado | Agregación multi-sensor sin ocultar crisis |
 
 ---
 
-## ⚙️ Instalación y Ejecución
+## Instalación y Ejecución
 
-### Backend
+### 1. Backend
+
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate       # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload
 ```
-La API estará disponible en: `http://localhost:8000`  
-Documentación Swagger: `http://localhost:8000/docs`
 
-### Poblar la base de datos
+Crear `backend/.env`:
+
+```env
+DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/acuifero_db
+GOOGLE_APPLICATION_CREDENTIALS_VERTEX=/ruta/a/svc-key.json
+VERTEX_PROJECT_ID=mi-proyecto-gcp
+VERTEX_LOCATION=us-central1
+VERTEX_MODEL_NAME=gemini-2.5-flash
+SENSOR_INTERVAL_MINUTES=10
+```
+
+Iniciar el servidor:
 
 ```bash
-cd backend
+uvicorn app.main:app --reload
+```
 
-# 1. Municipios y alertas iniciales
+Al arrancar, FastAPI ejecuta automáticamente:
+- Precálculo de tendencias EWMA de los 51 sensores
+- Primer tick del scheduler (lecturas iniciales)
+- APScheduler activo cada `SENSOR_INTERVAL_MINUTES` minutos
+
+API disponible en `http://localhost:8000` · Swagger en `http://localhost:8000/docs`
+
+### 2. Poblar la base de datos (primera vez)
+
+```bash
+# Municipios y alertas base
 python -m app.seeds.seed_data
 
-# 2. Sensores físicos (3–5 por municipio) + 2 años de lecturas diarias
+# 51 sensores + 730 días de lecturas históricas (~37 k registros)
 python -m app.seeds.seed_multi_sensor
 
-# 3. Calcular score_riesgo y nivel_riesgo desde los datos reales
+# Calcular score_riesgo y nivel_riesgo desde datos reales
 curl -X POST "http://localhost:8000/sensores/sync-all?days=730"
 ```
 
-> El paso 3 ejecuta el algoritmo EWMA Composite + Min-Max Cross-Normalization sobre los 51 sensores y persiste los resultados en la tabla `municipios`. Ver detalles en [`docs/sensores-multi-sensor.md`](docs/sensores-multi-sensor.md).
+### 3. Frontend
 
-### Frontend
 ```bash
 cd frontend
 npm install
 npm run start
 ```
-La aplicación estará disponible en: `http://localhost:4200`
 
-### Variables de Entorno (Backend)
-Crear un archivo `.env` en `/backend`:
-```env
-DATABASE_URL=postgresql://usuario:contraseña@localhost:5432/acuifero_db
-GEMINI_API_KEY=tu_api_key
+Disponible en `http://localhost:4200`
+
+---
+
+## Endpoints principales
+
+### Sensores y Riesgo
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/sensores/{id}/scores?days=730` | Score EWMA por sensor + score agregado Max-Pooling |
+| `GET` | `/sensores/{id}/live` | Lectura en tiempo real (tick bajo demanda) |
+| `GET` | `/sensores/scheduler/status` | Estado del scheduler: último tick, lecturas generadas |
+| `POST` | `/sensores/sync-all` | Recalcula scores de todos los municipios |
+
+### Predicción
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/prediccion/{id}` | EWMA + regresión lineal dual → meses hasta crisis, proyección 6 meses, tendencia |
+
+### Lecturas históricas
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/readings/{id}?days=90` | Últimas N lecturas del municipio (incluye lecturas del scheduler) |
+
+---
+
+## Módulo de Riesgo: algoritmos
+
+### Score por sensor — EWMA Composite
+
+```
+score = 0.35 × agotamiento          (1 - EWMA_7d / pico_histórico)
+      + 0.30 × cruce_EWMA           ((EWMA_90d - EWMA_7d) / σ, normalizado a 3σ)
+      + 0.20 × velocidad_EWMA       (pendiente EWMA_90d últimos 30d)
+      + 0.15 × presión_extracción   (EWMA_7d_extracción / max_extracción)
+```
+
+### Agregación por municipio — Max-Pooling
+
+```
+score_municipio = 0.7 × max(scores_sensores)
+                + 0.3 × promedio_cuadrático(scores_sensores)
+```
+
+Un sensor en crisis domina el resultado. 4 sensores en 0.2 + 1 en 0.9 → score **0.87 crítico** (no 0.34 con AVG).
+
+### Calibración relativa — Min-Max γ=0.5
+
+```
+score_final = ((raw - min_global) / (max_global - min_global)) ^ 0.5
+```
+
+Score 1.0 = municipio de mayor riesgo del sistema. Auto-calibrado.
+
+### Predicción — EWMA + Regresión lineal dual
+
+```
+slope_365d  → tendencia estructural anual (inmune a rebotes estacionales)
+slope_90d   → momentum reciente
+slope_blend = 0.65 × slope_365d + 0.35 × slope_90d
+
+días_hasta_crítico = (umbral_15% - nivel_actual) / slope_365d
+proyección[mes]    = nivel_actual + slope_blend × (mes × 30 días)
+```
+
+### Monitoreo en tiempo real — APScheduler
+
+```
+Al arrancar el servidor:
+  precompute_trends() → slope EWMA(30d) por sensor → cache en memoria
+
+Cada SENSOR_INTERVAL_MINUTES minutos:
+  tick() → nivel(t+Δ) = nivel(t) + slope × Δt + ruido(σ=0.025m)
+         → 51 nuevas lecturas insertadas en BD
 ```
 
 ---
 
-## 🔬 Módulo Multi-Sensor y Algoritmo de Riesgo
+## Por qué no promedio simple
 
-El sistema implementa una arquitectura de monitoreo distribuido con **3–5 sensores físicos por municipio**, cada uno con comportamiento independiente según su zona (urbano, agrícola, minero, reserva, etc.).
+| Municipio | AVG de sensores | Max-Pooling | Nivel reportado |
+|---|---|---|---|
+| Camiri (petrolero + urbano + ganadero) | 0.39 | **0.63** | crítico |
+| San José (minero + urbano + reserva) | 0.24 | **0.25** | medio |
+| Santa Cruz (5 zonas) | 0.16 | **0.17** | bajo |
 
-### Pipeline de riesgo
-
-1. **Ingesta**: lecturas diarias por sensor en tabla `readings` (51 sensores, 37 k lecturas/año)
-2. **Evaluación individual**: algoritmo **EWMA Composite** — cruce de medias exponenciales (7d vs 90d) detecta caídas sostenidas distinguiéndolas de variación estacional
-3. **Agregación por peor escenario**: **Max-Pooling** `= 0.7 × max(scores) + 0.3 × promedio_cuadrático` — un sensor en crisis no queda oculto por los demás
-4. **Calibración relativa**: **Min-Max Cross-Normalization** con γ=0.5 entre todos los municipios — el score refleja posición relativa en el sistema
-5. **Resultado**: un único `score_riesgo` (0–1) y `nivel_riesgo` (bajo/medio/alto/crítico) por municipio → Leaflet dibuja un círculo con el color correspondiente
-
-### Por qué no AVG simple
-
-| Escenario: 4 sensores en 0.2 + 1 en 0.9 | Resultado | Decisión |
-|---|---|---|
-| Promedio simple | 0.34 — medio | Alcalde no actúa |
-| Max-Pooling (este sistema) | 0.87 — **crítico** | Alcalde recibe alerta |
-
-Ver documentación completa: [`docs/sensores-multi-sensor.md`](docs/sensores-multi-sensor.md)
+El sensor petrolero de Camiri (1.84 m y bajando) queda visible aunque los otros sensores del municipio estén más estables.
 
 ---
 
-## 👥 Equipo: NINJE
+## Documentación técnica
+
+- [`docs/sensores-multi-sensor.md`](docs/sensores-multi-sensor.md) — arquitectura completa, fórmulas, ranking de municipios y referencia de archivos
+
+---
+
+## Equipo: NINJE
 
 | Integrante | Rol |
 |---|---|
@@ -223,4 +297,4 @@ Ver documentación completa: [`docs/sensores-multi-sensor.md`](docs/sensores-mul
 
 ---
 
-*Proyecto desarrollado para la Hackathon Build With AI 2026 - Google Developer Groups NINJE*
+*Proyecto desarrollado para la Hackathon Build With AI 2026 — Google Developer Groups NINJE*
