@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     # Gemini API Key (fallback)
     gemini_api_key: Optional[str] = None
 
+    # Scheduler — intervalo entre lecturas simuladas (minutos)
+    sensor_interval_minutes: int = 10
+
     class Config:
         env_file = ".env"
 

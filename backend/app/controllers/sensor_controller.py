@@ -55,6 +55,12 @@ def sync_all_scores(days: int = 730, db: Session = Depends(get_db)):
     """
     Recalcula score_riesgo y nivel_riesgo de todos los municipios usando
     EWMA Composite + Max-Pooling + Min-Max Cross-Normalization.
-    Reemplaza los valores hardcodeados del seed con valores derivados de datos reales.
     """
     return SensorService(db).sync_all_scores(days=days)
+
+
+@router.get("/scheduler/status")
+def scheduler_status():
+    """Estado del scheduler de monitoreo en tiempo real."""
+    from app.services.scheduler_service import get_status
+    return get_status()
