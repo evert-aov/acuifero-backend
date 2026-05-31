@@ -1,0 +1,52 @@
+<div class="bg-white border border-jichi-gray/40 rounded-2xl p-6 h-full flex flex-col">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+         style="background: linear-gradient(135deg, #4285f4, #34a853)">
+      <lucide-angular [img]="Brain" size="18" class="text-white"></lucide-angular>
+    </div>
+    <div>
+      <h3 class="font-semibold text-sm text-jichi-dark">Análisis Gemini AI</h3>
+      <p class="text-xs text-jichi-muted">{{ municipioNombre }}</p>
+    </div>
+  </div>
+
+  @if (!resumen() && !loading()) {
+    <div class="flex-1 flex flex-col items-center justify-center gap-5 py-8">
+      <div class="w-14 h-14 rounded-2xl bg-jichi-base border border-jichi-gray/40 flex items-center justify-center">
+        <lucide-angular [img]="Brain" size="24" class="text-jichi-muted"></lucide-angular>
+      </div>
+      <div class="text-center">
+        <p class="text-sm font-medium text-jichi-dark mb-1">Análisis ejecutivo con IA</p>
+        <p class="text-xs text-jichi-muted max-w-xs">
+          Genera un diagnóstico detallado del acuífero para autoridades municipales y productores.
+        </p>
+      </div>
+      <button (click)="generarResumen()"
+              class="inline-flex items-center gap-2 bg-jichi-dark text-jichi-base
+                     px-6 py-3 rounded-full font-semibold text-sm
+                     hover:bg-jichi-accent hover:text-jichi-dark transition-colors duration-150">
+        <lucide-angular [img]="Brain" size="14"></lucide-angular>
+        Generar análisis
+      </button>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="flex-1 flex flex-col items-center justify-center gap-4">
+      <div class="w-8 h-8 rounded-full border-2 border-jichi-gray border-t-jichi-accent animate-spin"></div>
+      <p class="text-xs font-medium text-jichi-muted">Consultando Gemini...</p>
+    </div>
+  }
+
+  @if (resumen(); as resumen) {
+    <div class="flex-1 overflow-y-auto">
+      <p class="text-xs leading-relaxed text-jichi-muted" style="white-space: pre-line">{{ resumen }}</p>
+      <button (click)="generarResumen()"
+              class="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-jichi-muted
+                     hover:text-jichi-dark transition-colors duration-150">
+        <lucide-angular [img]="RotateCcw" size="12"></lucide-angular>
+        Regenerar análisis
+      </button>
+    </div>
+  }
+</div>

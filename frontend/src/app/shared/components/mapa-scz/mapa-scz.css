@@ -1,0 +1,10 @@
+@keyframes pulse-halo {
+  0%, 100% {
+    r: var(--halo-radius, 16);
+    opacity: 0.3;
+  }
+  50% {
+    r: calc(var(--halo-radius, 16) + 6);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+body {
+  background-color: #F9FAF7;
+  color: #262626;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+/* ── Jichi fade-up animation ─────────────────────────────── */
+@keyframes jichi-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: jichi-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.delay-0   { animation-delay: 0ms;   }
+.delay-150 { animation-delay: 150ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-450 { animation-delay: 450ms; }
+
+/* ── Risk badges (Jichi) ─────────────────────────────────── */
+.badge-critico, .badge-alto, .badge-medio, .badge-bajo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge-critico { background: #fee2e2; color: #991b1b; }
+.badge-alto    { background: #fef3c7; color: #92400e; }
+.badge-medio   { background: #fefce8; color: #78350f; }
+.badge-bajo    { background: #f0fdf4; color: #14532d; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F9FAF7; }
+::-webkit-scrollbar-thumb { background: #E5E5E5; border-radius: 3px; }
+
+/* ── Leaflet overrides ───────────────────────────────────── */
+.leaflet-container { font-family: 'Poppins', sans-serif; background: #eef2ee; }
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  border: 1px solid #E5E5E5;
+}
+.leaflet-tooltip {
+  border-radius: 8px;
+  border: 1px solid #E5E5E5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 6px 12px;
+  font-family: 'Poppins', sans-serif;
+}

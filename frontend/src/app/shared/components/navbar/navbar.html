@@ -1,0 +1,20 @@
+<nav class="fixed top-0 inset-x-0 z-50 h-16 bg-jichi-base transition-all duration-200"
+     [class.shadow-sm]="scrolled" [class.border-b]="scrolled" [class.border-jichi-gray]="scrolled">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8 h-full flex items-center justify-between">
+    <a routerLink="/" class="flex items-center gap-2 no-underline group">
+      <lucide-angular [img]="Droplets" size="20" class="text-jichi-accent"></lucide-angular>
+      <span class="font-bold text-sm text-jichi-dark">Acuífero-Data SCZ</span>
+    </a>
+    <div class="flex items-center gap-6">
+      <a routerLink="/dashboard"
+         class="text-sm font-medium text-jichi-muted hover:text-jichi-dark transition-colors duration-150">
+        Dashboard
+      </a>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+        <span class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Live</span>
+      </div>
+    </div>
+  </div>
+</nav>
+<div class="h-16"></div>

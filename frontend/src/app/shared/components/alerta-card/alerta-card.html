@@ -1,0 +1,26 @@
+@if (alerta) {
+  <div class="bg-white border rounded-xl p-4 hover:shadow-sm transition-shadow duration-150"
+       [class.border-red-200]="isCritica"
+       [class.border-jichi-gray/40]="!isCritica">
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+           [class.bg-red-50]="isCritica" [class.bg-amber-50]="!isCritica">
+        <lucide-angular [img]="tipoIcono" size="16"
+                        [class.text-red-500]="isCritica"
+                        [class.text-amber-500]="!isCritica"></lucide-angular>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+          <span class="font-semibold text-sm text-jichi-dark">{{ alerta.municipio_nombre }}</span>
+          <span [class]="'badge-' + (isCritica ? 'critico' : 'alto')">{{ alerta.severidad }}</span>
+        </div>
+        <div class="flex items-center gap-1.5 mb-2">
+          <span class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                [class.bg-red-400]="isCritica" [class.bg-amber-400]="!isCritica"></span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">{{ alerta.tipo }}</span>
+        </div>
+        <p class="text-xs leading-relaxed text-jichi-muted">{{ alerta.descripcion }}</p>
+      </div>
+    </div>
+  </div>
+}

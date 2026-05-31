@@ -1,0 +1,189 @@
+<div class="min-h-screen bg-jichi-base">
+  <!-- Sticky top bar -->
+  <div class="sticky top-0 z-40 bg-jichi-base/95 backdrop-blur-sm border-b border-jichi-gray/40 px-6 lg:px-8 py-3 flex items-center gap-3">
+    <a routerLink="/dashboard"
+       class="inline-flex items-center gap-1.5 text-sm font-medium text-jichi-muted hover:text-jichi-dark transition-colors duration-150">
+      <lucide-angular [img]="ArrowLeft" size="16"></lucide-angular>
+      Volver al mapa
+    </a>
+    @if (municipio(); as m) {
+      <span class="text-jichi-gray">/</span>
+      <span class="text-sm font-medium text-jichi-dark">{{ m.nombre }}</span>
+    }
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 lg:px-8 py-8">
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="flex items-center justify-center py-24">
+        <div class="flex flex-col items-center gap-4">
+          <div class="w-10 h-10 rounded-full border-2 border-jichi-gray border-t-jichi-accent animate-spin"></div>
+          <p class="text-sm text-jichi-muted">Cargando análisis...</p>
+        </div>
+      </div>
+    }
+
+    <!-- Not found -->
+    @if (notFound()) {
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-white border border-jichi-gray/40 flex items-center justify-center mb-6">
+          <lucide-angular [img]="TriangleAlert" size="28" class="text-amber-400"></lucide-angular>
+        </div>
+        <h2 class="font-bold text-xl text-jichi-dark mb-2">Municipio no encontrado</h2>
+        <p class="text-sm text-jichi-muted mb-8 max-w-sm">El municipio solicitado no existe en la base de datos.</p>
+        <a routerLink="/dashboard"
+           class="inline-flex items-center gap-2 bg-jichi-dark text-jichi-base px-6 py-3 rounded-full
+                  font-semibold text-sm hover:bg-jichi-accent hover:text-jichi-dark transition-colors duration-150">
+          <lucide-angular [img]="ArrowLeft" size="14"></lucide-angular>
+          Volver al dashboard
+        </a>
+      </div>
+    }
+
+    @if (!loading() && !notFound() && municipio(); as municipio) {
+      @if (prediccion(); as prediccion) {
+
+      <!-- Header card -->
+      <div class="bg-white border border-jichi-gray/40 rounded-2xl p-6 mb-6">
+        <div class="flex justify-between items-start flex-wrap gap-4 mb-6">
+          <div>
+            <h1 class="font-bold text-3xl text-jichi-dark leading-tight mb-1">{{ municipio.nombre }}</h1>
+            <p class="text-sm text-jichi-muted capitalize">
+              {{ municipio.region.replace('_', ' ') }} &middot; {{ municipio.poblacion | number }} habitantes
+            </p>
+          </div>
+          <span class="px-4 py-2 rounded-full text-sm font-semibold uppercase"
+                [class]="getRiesgoClass(municipio.nivel_riesgo)">
+            {{ municipio.nivel_riesgo }}
+          </span>
+        </div>
+
+        <!-- Score bar -->
+        <div>
+          <div class="flex justify-between text-xs mb-2">
+            <span class="font-medium text-jichi-muted">Score de riesgo hídrico</span>
+            <span class="font-bold tabular-nums text-jichi-dark">
+              {{ (municipio.score_riesgo * 100).toFixed(0) }}/100
+            </span>
+          </div>
+          <div class="h-2 rounded-full bg-jichi-gray/40">
+            <div class="h-2 rounded-full transition-all duration-700"
+                 [style.width.%]="municipio.score_riesgo * 100"
+                 [style.background]="getRiesgoColor(municipio.nivel_riesgo)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI cards — sensor en tiempo real -->
+      @if (lastReading(); as lr) {
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-2">
+
+          <!-- Nivel freático actual -->
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5 hover:shadow-sm transition-shadow duration-150">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="Droplets" size="14" class="text-jichi-accent"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">
+              {{ lr.nivel_freatico_m | number:'1.1-1' }} m
+            </div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Nivel<br>freático</div>
+          </div>
+
+          <!-- Humedad del suelo -->
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5 hover:shadow-sm transition-shadow duration-150">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="Waves" size="14" [style.color]="getHumedadColor(lr.humedad_suelo_pct)"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">
+              {{ lr.humedad_suelo_pct | number:'1.0-0' }}%
+            </div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Humedad<br>del suelo</div>
+          </div>
+
+          <!-- Extracción -->
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5 hover:shadow-sm transition-shadow duration-150">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="Gauge" size="14" class="text-jichi-muted"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">
+              {{ lr.extraccion_lps | number:'1.0-0' }} lps
+            </div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Extracción<br>actual</div>
+          </div>
+
+          <!-- Precipitación último día -->
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5 hover:shadow-sm transition-shadow duration-150">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="CloudRain" size="14" class="text-sky-400"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">
+              {{ lr.precipitacion_mm | number:'1.1-1' }} mm
+            </div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Precipitación<br>último día</div>
+          </div>
+        </div>
+
+        <!-- Timestamp de última lectura -->
+        <p class="text-[11px] text-jichi-muted mb-6">
+          Última lectura:
+          {{ lr.timestamp | date:'d MMM yyyy':'UTC' }}
+        </p>
+      } @else {
+        <!-- KPI cards fallback (prediccion mock) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="TrendingDown" size="14" class="text-jichi-muted"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">{{ prediccion.meses_criticos }}</div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Meses hasta<br>situación crítica</div>
+          </div>
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="Droplets" size="14" class="text-jichi-accent"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">{{ prediccion.proyeccion[0] }}%</div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Nivel freático<br>estimado</div>
+          </div>
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5">
+            <div class="w-8 h-8 rounded-lg bg-jichi-base border border-jichi-gray/40 flex items-center justify-center mb-3">
+              <lucide-angular [img]="CloudRain" size="14" class="text-jichi-muted"></lucide-angular>
+            </div>
+            <div class="font-bold text-2xl tabular-nums text-jichi-dark mb-1">{{ prediccion.precipitacion_historica[5] }}mm</div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Precipitación<br>último mes</div>
+          </div>
+          <div class="bg-white border border-jichi-gray/40 rounded-xl p-5">
+            <div class="w-2 h-2 rounded-full mb-3 mt-1" [style.background]="getRiesgoColor(municipio.nivel_riesgo)"></div>
+            <div class="font-bold text-sm text-jichi-dark mb-1 leading-snug">{{ prediccion.tendencia }}</div>
+            <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">Tendencia<br>actual</div>
+          </div>
+        </div>
+      }
+
+      <!-- Gráfico + Panel Gemini -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white border border-jichi-gray/40 rounded-2xl p-6">
+          @if (chartReadings().length > 0) {
+            <h3 class="font-semibold text-sm text-jichi-dark mb-1">
+              Histórico últimos 90 días — nivel freático y precipitación
+            </h3>
+            <p class="text-[11px] text-jichi-muted mb-4">Datos reales del sensor simulado</p>
+            <app-grafico-tendencia [readings]="chartReadings()" />
+          } @else {
+            <h3 class="font-semibold text-sm text-jichi-dark mb-5">Proyección nivel freático — 6 meses</h3>
+            <app-grafico-tendencia
+              [proyeccion]="prediccion.proyeccion"
+              [precipitacion]="prediccion.precipitacion_historica" />
+          }
+        </div>
+        <app-gemini-panel
+          class="h-full"
+          [municipioId]="municipio.id"
+          [municipioNombre]="municipio.nombre" />
+      </div>
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="bg-white border border-jichi-gray/40 rounded-xl p-5 hover:shadow-sm transition-shadow duration-150">
+  <div class="flex items-start justify-between mb-3">
+    @if (icono) {
+      <lucide-angular [img]="icono" size="18" class="text-jichi-muted"></lucide-angular>
+    }
+    <span class="w-2 h-2 rounded-full flex-shrink-0 mt-1 ml-auto" [style.background]="color"></span>
+  </div>
+  <div class="font-bold text-2xl tabular-nums mb-1" [style.color]="color">{{ valor }}</div>
+  <div class="text-[10px] font-bold uppercase tracking-widest text-jichi-muted">{{ etiqueta }}</div>
+</div>
